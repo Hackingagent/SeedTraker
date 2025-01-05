@@ -57,7 +57,7 @@ public class AddSeedDialog extends JDialog {
         // Registration date
         constraints.gridx = 0;
         constraints.gridy = 2;
-        add(new JLabel("Registration Date:"), constraints);
+        add(new JLabel("Registration Date(YYYY-MM--DD):"), constraints);
 
         constraints.gridx = 1;
         constraints.gridy = 2;
@@ -67,7 +67,7 @@ public class AddSeedDialog extends JDialog {
         // Expiring date
         constraints.gridx = 0;
         constraints.gridy = 3;
-        add(new JLabel("Expiring Date:"), constraints);
+        add(new JLabel("Expiring Date(YYYY-MM--DD):"), constraints);
 
         constraints.gridx = 1;
         constraints.gridy = 3;

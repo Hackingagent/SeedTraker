@@ -19,6 +19,8 @@ public class UserService {
         return currentUserId;
     }
 
+    
+
     public UserService() {
         try {
             // Load the MySQL Connector/J driver
@@ -80,18 +82,19 @@ public class UserService {
         return false;
     }
 
-    public boolean registerUser(String username, String password) {
+    public boolean registerUser(String username, String email, String password) {
         if (connection == null) {
             throw new RuntimeException("Database connection is null");
         }
         PreparedStatement statement = null;
         try {
-            // Check if the username already exists
-            statement = connection.prepareStatement("SELECT * FROM users WHERE username = ?");
+            // Check if the username or email already exists
+            statement = connection.prepareStatement("SELECT * FROM users WHERE username = ? OR email = ?");
             statement.setString(1, username);
+            statement.setString(2, email);
             ResultSet result = statement.executeQuery();
             if (result.next()) {
-                System.out.println("Username already exists!");
+                System.out.println("Username or email already exists!");
                 return false;
             }
     
@@ -99,9 +102,10 @@ public class UserService {
             String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
     
             // Prepare a query to insert the new user
-            statement = connection.prepareStatement("INSERT INTO users (username, password) VALUES (?, ?)");
+            statement = connection.prepareStatement("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
             statement.setString(1, username);
-            statement.setString(2, hashedPassword);
+            statement.setString(2, email);
+            statement.setString(3, hashedPassword);
     
             // Execute the query
             statement.executeUpdate();
@@ -131,7 +135,8 @@ public class UserService {
             if (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String password = resultSet.getString("password");
-                return new User(id, username, password);
+                String email = resultSet.getString("email");
+                return new User(id, username, password, email);
             } else {
                 return null;
             }

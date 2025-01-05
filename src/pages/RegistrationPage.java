@@ -14,6 +14,7 @@ import utils.UserService;
 
 public class RegistrationPage extends JPanel {
     private JTextField usernameField;
+    private JTextField emailField;
     private JPasswordField passwordField;
     private JPasswordField confirmPasswordField;
     private UserService userService;
@@ -37,21 +38,29 @@ public class RegistrationPage extends JPanel {
         usernameField.setFont(new Font("Arial", Font.PLAIN, 16));
         add(usernameField, getConstraints(1, 1, 1, 1));
 
+        // Create email field
+        JLabel emailLabel = new JLabel("Email:");
+        emailLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        add(emailLabel, getConstraints(0, 2, 1, 1));
+        emailField = new JTextField(20);
+        emailField.setFont(new Font("Arial", Font.PLAIN, 16));
+        add(emailField, getConstraints(1, 2, 1, 1));
+
         // Create password field
         JLabel passwordLabel = new JLabel("Password:");
         passwordLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        add(passwordLabel, getConstraints(0, 2, 1, 1));
+        add(passwordLabel, getConstraints(0, 3, 1, 1));
         passwordField = new JPasswordField(20);
         passwordField.setFont(new Font("Arial", Font.PLAIN, 16));
-        add(passwordField, getConstraints(1, 2, 1, 1));
+        add(passwordField, getConstraints(1, 3, 1, 1));
 
         // Create confirm password field
         JLabel confirmPasswordLabel = new JLabel("Confirm Password:");
         confirmPasswordLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        add(confirmPasswordLabel, getConstraints(0, 3, 1, 1));
+        add(confirmPasswordLabel, getConstraints(0, 4, 1, 1));
         confirmPasswordField = new JPasswordField(20);
         confirmPasswordField.setFont(new Font("Arial", Font.PLAIN, 16));
-        add(confirmPasswordField, getConstraints(1, 3, 1, 1));
+        add(confirmPasswordField, getConstraints(1, 4, 1, 1));
 
         // Create register button
         JButton registerButton = new JButton("Register");
@@ -59,31 +68,32 @@ public class RegistrationPage extends JPanel {
         registerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String username = usernameField.getText();
+                String email = emailField.getText();
                 String password = new String(passwordField.getPassword());
                 String confirmPassword = new String(confirmPasswordField.getPassword());
-        
-                if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+
+                if (username.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Please fill in all fields", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-        
+
                 if (!password.equals(confirmPassword)) {
                     JOptionPane.showMessageDialog(null, "Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-        
-                if (userService.registerUser(username, password)) {
+
+                if (userService.registerUser(username, email, password)) {
                     JOptionPane.showMessageDialog(null, "User registered successfully!");
                     // Go back to login page
                     LoginPage loginPage = new LoginPage();
                     MainFrame mainFrame = (MainFrame) SwingUtilities.getWindowAncestor(RegistrationPage.this);
                     mainFrame.setCurrentPage(loginPage);
                 } else {
-                    JOptionPane.showMessageDialog(null, "Username already taken", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Username or email already taken", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
-        add(registerButton, getConstraints(1, 4, 1, 1));
+        add(registerButton, getConstraints(1, 5, 1, 1));
 
         // Create login link
         JLabel loginLink = new JLabel("Already have an account? Login here");
@@ -97,7 +107,7 @@ public class RegistrationPage extends JPanel {
                 mainFrame.setCurrentPage(loginPage);
             }
         });
-        add(loginLink, getConstraints(1, 5, 1, 1));
+        add(loginLink, getConstraints(1, 6, 1, 1));
     }
 
     // Helper method to get GridBagConstraints

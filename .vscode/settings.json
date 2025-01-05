@@ -1,0 +1,11 @@
+{
+    "java.project.sourcePaths": [
+        "src"
+    ],
+    "java.project.outputPath": "bin",
+    "java.project.referencedLibraries": [
+        "/home/ngulefac/Downloads/javax.mail.jar",
+        "/home/ngulefac/Downloads/jbcrypt-0.4.jar",
+        "/home/ngulefac/mysql-connector-j-9.0.0/mysql-connector-j-9.0.0.jar"
+    ]
+}

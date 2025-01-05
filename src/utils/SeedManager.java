@@ -2,7 +2,9 @@ package utils;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+
 
 import javax.swing.JOptionPane;
 
@@ -73,7 +75,7 @@ public class SeedManager {
                 Date expiringDate = resultSet.getDate("ExpiringDate");
                 int quantityAvailable = resultSet.getInt("QuantityAvailable");
                 int addedByUserId = resultSet.getInt("AddedBy");
-                User addedByUser = new User(addedByUserId, "", ""); // Assuming you have a User constructor that takes id, username, and password
+                User addedByUser = new User(addedByUserId, "", "", ""); // Assuming you have a User constructor that takes id, username, and password
                 seeds.add(new Seed(id, seedType, registrationDate, expiringDate, quantityAvailable, addedByUser));
             }
         } catch (SQLException e) {
@@ -119,4 +121,67 @@ public class SeedManager {
             System.err.println("Error updating seed: " + e.getMessage());
         }
     }
+
+    public List<Seed> getExpiringSeeds(int daysBeforeExpiration) {
+        List<Seed> expiringSeeds = new ArrayList<>();
+    
+        // Get the current date
+        java.util.Date currentDate = new java.util.Date();
+    
+        // Calculate the expiration date
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentDate);
+        calendar.add(Calendar.DAY_OF_YEAR, daysBeforeExpiration);
+        java.sql.Date expirationDate = new java.sql.Date(calendar.getTimeInMillis());
+    
+        try {
+            // Retrieve seeds from the database
+            String query = "SELECT * FROM Seeds WHERE ExpiringDate BETWEEN ? AND ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setDate(1, new java.sql.Date(currentDate.getTime()));
+            statement.setDate(2, expirationDate);
+            ResultSet resultSet = statement.executeQuery();
+    
+            // Create Seed objects from the result set
+            while (resultSet.next()) {
+                int id = resultSet.getInt("SeedID");
+                String seedType = resultSet.getString("SeedType");
+                Date registrationDate = resultSet.getDate("RegistrationDate");
+                Date expiringDate = resultSet.getDate("ExpiringDate");
+                int quantityAvailable = resultSet.getInt("QuantityAvailable");
+                int addedBy = resultSet.getInt("AddedBy");
+                User user = getUserById(addedBy);
+    
+                Seed seed = new Seed(id, seedType, registrationDate, expiringDate, quantityAvailable, user);
+                expiringSeeds.add(seed);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error retrieving expiring seeds: " + e.getMessage());
+        }
+    
+        return expiringSeeds;
+    }
+
+    // Helper method to get a user by ID
+    public User getUserById(int id) {
+        try {
+            String query = "SELECT * FROM users WHERE id = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                String username = resultSet.getString("username");
+                String email = resultSet.getString("email");
+                String password = resultSet.getString("password");
+                return new User(id, username, password, email);
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            System.err.println("Error retrieving user by ID: " + e.getMessage());
+            return null;
+        }
+    }
 }
+
+

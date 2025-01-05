@@ -23,7 +23,7 @@ public class EditSeedDialog extends JDialog {
         int currentUserId = UserService.getCurrentUserId();
         if (seed.getAddedBy().getId() != currentUserId) {
             JOptionPane.showMessageDialog(null, "You are not authorized to edit this seed.", "Error", JOptionPane.ERROR_MESSAGE);
-            throw new RuntimeException("Unauthorized access");
+            return;
         }
 
         // Create dialog fields
